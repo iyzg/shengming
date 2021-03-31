@@ -7,12 +7,11 @@ fn main() {
     let reader = BufReader::new(file);
 
     /*
-     * Steps
+     * Todo List 
      * -----
-     * 1. Read in file
+     * 1. Find time between blocks
      * 2. For all time blocks, add that time to proper tags
-     *  -> maintain two time blocks
-     *
+     * TODO: Eventually use dates to make pretty graph or something
      */
 
     for (index, line) in reader.lines().enumerate() {
