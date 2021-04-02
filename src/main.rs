@@ -37,7 +37,7 @@ fn main() {
             let line = line
                 .unwrap();
 
-            let vec = *line
+            let vec = line
                 .split(" ")
                 .collect::<Vec<_>>();
 
