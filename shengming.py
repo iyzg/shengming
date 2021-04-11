@@ -7,6 +7,9 @@ def time_to_minutes(time):
 
 
 
+# TODO: Proper way to name things and documentation
+# TODO: Check for just the last week
+# TODO: Score for every day
 def main():
     # TODO: Add way for scores / 30 minutes
     # TODO: Happiness every day
