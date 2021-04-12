@@ -6,10 +6,11 @@ def time_to_minutes(time):
     return int(split_time[0]) * 60 + int(split_time[1])
 
 
-
 # TODO: Proper way to name things and documentation
 # TODO: Check for just the last week
 # TODO: Score for every day
+# TODO: Write states to JSON or something then also be able to output stats from that
+# TODO: Have # be comment in the file
 def main():
     # TODO: Add way for scores / 30 minutes
     # TODO: Happiness every day
