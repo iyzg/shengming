@@ -6,3 +6,4 @@ This is to gain a perspective on where the broad strokes of my life go: areas (s
 and I'm planning on adding an arbitrary score for "productivity" or something along those lines.
 
 TODO: Document how the file format works
+

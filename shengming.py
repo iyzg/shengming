@@ -21,7 +21,7 @@ def main():
     lastTime = 0
 
     try:
-        log = open("daily", "r")
+        log = open("daily.sm", "r")
     except IOError:
         print("No daily file found")
         sys.exit();
@@ -29,6 +29,9 @@ def main():
     lines = log.readlines()
 
     for line in lines:
+        if line[0] == '#':
+            continue;
+
         words = line.split()
 
         # TODO: Handle subtag
