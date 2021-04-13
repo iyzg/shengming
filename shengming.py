@@ -30,7 +30,7 @@ def main():
 
     for line in lines:
         if line[0] == '#':
-            continue;
+            continue
 
         words = line.split()
 
@@ -38,13 +38,13 @@ def main():
         # Reset when you're on dates
         if len(words) == 0:
             continue;
-        elif len(words) == 1:
+        elif "-" in words[0] and words[0][0].isdigit():
             lastTime = 0
             tags.clear()
             continue
 
         if not words[0][0].isdigit():
-            continue;
+            continue
 
         time_passed = time_to_minutes(words[0])
         # Process last one
