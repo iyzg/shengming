@@ -1,6 +1,5 @@
 from collections import deque
 from tinydb import TinyDB, Query
-
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,13 +20,13 @@ def graph(tag):
     days.reverse()
 
     for day in days:
-        voidtime = 0
+        tt = 0
         if tag in day['tags']:
-            voidtime = day['tags'][tag]
-        gp['time'].append(voidtime)
+            tt = day['tags'][tag]
+        gp['time'].append(tt)
         gp['date'].append(day['date'])
-        total += voidtime
-        queue.append(voidtime)
+        total += tt
+        queue.append(tt)
         if len(queue) == 8:
             total -= queue.popleft()
         gp['avg'].append(total / len(queue))
@@ -126,9 +125,10 @@ def main():
                     else:
                         temp_tags.append(section)
 
-
                 for ttag in temp_tags:
-                    dd['tags'][ttag] = time_passed - lastTime
+                    dd['tags'].setdefault(ttag, 0)
+                    dd['tags'][ttag] += time_passed - lastTime
+
                     if ttag not in tagTime:
                         tagTime[ttag] = time_passed - lastTime
                     else:
