@@ -2,9 +2,7 @@ from collections import deque
 from tinydb import TinyDB, Query
 import argparse
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import sys
 
 # TODO: Parse function -> send each day's text to either tags, score, happiness, etc.
 
