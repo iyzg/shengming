@@ -140,3 +140,4 @@ cython_debug/
 # personal shengming files
 *.sm
 *.json
+*.png

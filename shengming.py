@@ -1,7 +1,48 @@
-import sys
+from collections import deque
 from tinydb import TinyDB, Query
 
+import argparse
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import sys
+
 # TODO: Parse function -> send each day's text to either tags, score, happiness, etc.
+
+def graph(tag):
+    db = TinyDB('db.json')
+    days_table = db.table('days')
+    gp = {'time':[], 'date':[], 'avg':[]}
+    queue = deque([])
+    total = 0
+    days = []
+    for day in days_table:
+        days.append(day)
+    days.reverse()
+
+    for day in days:
+        voidtime = 0
+        if tag in day['tags']:
+            voidtime = day['tags'][tag]
+        gp['time'].append(voidtime)
+        gp['date'].append(day['date'])
+        total += voidtime
+        queue.append(voidtime)
+        if len(queue) == 8:
+            total -= queue.popleft()
+        gp['avg'].append(total / len(queue))
+
+    df = pd.DataFrame(gp)
+
+    fig, ax = plt.subplots()
+
+    ax.plot('date', 'time', data=df)
+    ax.plot('date', 'avg', data=df)
+    ax.set_title("Time spent on @{}".format(tag))
+
+    fig.autofmt_xdate()
+
+    plt.savefig('plot.png')
 
 def time_to_minutes(time):
     # TODO: Convert time to minutes
@@ -15,6 +56,21 @@ def time_to_minutes(time):
 # TODO: Write states to JSON or something then also be able to output stats from that
 # TODO: Have # be comment in the file
 def main():
+    # Arguments
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
+
+    group.add_argument("-u", "--update", help="Update database")
+    group.add_argument("-s", "--stats", metavar="tag", help="Get stats for tag")
+
+    args = parser.parse_args()
+
+    if args.stats != None:
+        graph(args.stats)
+        sys.exit()
+
+
+
     # TODO: Add way for scores / 30 minutes
     # TODO: Happiness every day
     log = None
@@ -32,7 +88,7 @@ def main():
         log = open("life.sm", "r")
     except IOError:
         print("No daily file found")
-        sys.exit();
+        sys.exit()
 
     lines = log.readlines()
 
@@ -46,7 +102,7 @@ def main():
         # TODO: Handle subtag
         # Reset when you're on dates
         if len(words) == 0:
-            continue;
+            continue
         elif "-" in words[0] and words[0][0].isdigit():
             dd['date'] = words[0].strip()
             dd['tags'] = {}
@@ -81,7 +137,6 @@ def main():
         # Push Current (Not if FIN)
         tags.clear()
         if words[1] == "FIN":
-            print(dd)
             days.insert(dd) 
             dd.clear()
             continue
@@ -90,13 +145,6 @@ def main():
         for word in words:
             if word[0] == '@':
                 tags.append(word[1:])
-
-    for tag in sorted(tagTime):
-        if "(" not in tag:
-            print()
-        print("{}: {} minutes".format(tag, tagTime[tag]))
-
-    days.all()
 
 if __name__ == '__main__':
     main()
