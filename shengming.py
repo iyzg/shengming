@@ -35,8 +35,8 @@ def graph(tag):
 
     fig, ax = plt.subplots()
 
-    ax.plot('date', 'time', data=df)
-    ax.plot('date', 'avg', data=df)
+    ax.plot('date', 'time', data=df, color="gainsboro")
+    ax.plot('date', 'avg', data=df, color="black")
     ax.set_title("Time spent on @{}".format(tag))
 
     fig.autofmt_xdate()
