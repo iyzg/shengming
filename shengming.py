@@ -1,4 +1,7 @@
 import sys
+from tinydb import TinyDB, Query
+
+# TODO: Parse function -> send each day's text to either tags, score, happiness, etc.
 
 def time_to_minutes(time):
     # TODO: Convert time to minutes
@@ -20,14 +23,20 @@ def main():
 
     lastTime = 0
 
+    # TODO: Different tables for days/tags/etc.
+    db = TinyDB('db.json')
+    days = db.table('days')
+    days.truncate()
+
     try:
-        log = open("daily.sm", "r")
+        log = open("life.sm", "r")
     except IOError:
         print("No daily file found")
         sys.exit();
 
     lines = log.readlines()
 
+    dd = {}
     for line in lines:
         if line[0] == '#':
             continue
@@ -39,6 +48,8 @@ def main():
         if len(words) == 0:
             continue;
         elif "-" in words[0] and words[0][0].isdigit():
+            dd['date'] = words[0].strip()
+            dd['tags'] = {}
             lastTime = 0
             tags.clear()
             continue
@@ -46,6 +57,7 @@ def main():
         if not words[0][0].isdigit():
             continue
 
+        
         time_passed = time_to_minutes(words[0])
         # Process last one
         if lastTime != 0:
@@ -54,12 +66,13 @@ def main():
                 tag_split = tag.split("(")
                 for section in tag_split:
                     if ')' in section:
-                        temp_tags.append(tag_split[0] + " >> " + section[:-1])
+                        temp_tags.append(tag_split[0] + "(" + section)
                     else:
                         temp_tags.append(section)
 
 
                 for ttag in temp_tags:
+                    dd['tags'][ttag] = time_passed - lastTime
                     if ttag not in tagTime:
                         tagTime[ttag] = time_passed - lastTime
                     else:
@@ -68,6 +81,9 @@ def main():
         # Push Current (Not if FIN)
         tags.clear()
         if words[1] == "FIN":
+            print(dd)
+            days.insert(dd) 
+            dd.clear()
             continue
 
         lastTime = time_passed
@@ -76,9 +92,11 @@ def main():
                 tags.append(word[1:])
 
     for tag in sorted(tagTime):
-        if ">>" not in tag:
+        if "(" not in tag:
             print()
         print("{}: {} minutes".format(tag, tagTime[tag]))
+
+    days.all()
 
 if __name__ == '__main__':
     main()

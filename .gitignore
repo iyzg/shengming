@@ -137,6 +137,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# In case I forget
-daily*
+# personal shengming files
 *.sm
+*.json
