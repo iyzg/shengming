@@ -181,7 +181,6 @@ def main():
             elif word[0] == '-':
                 lastScore = int(word)
             elif word[0] == '+':
-                print("found score: {} on line {}".format(word, line))
                 lastScore = int(word[1:])
 
 if __name__ == '__main__':
