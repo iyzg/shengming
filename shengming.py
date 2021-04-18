@@ -7,6 +7,39 @@ import sys
 
 # TODO: Parse function -> send each day's text to either tags, score, happiness, etc.
 
+
+def score():
+    db = TinyDB('db.json')
+    days_table = db.table('days')
+    gp = {'score':[], 'date':[], 'avg':[]}
+    queue = deque([])
+    total = 0
+    days = []
+    for day in days_table:
+        days.append(day)
+    days.reverse()
+
+    for day in days:
+        gp['score'].append(day['score'])
+        gp['date'].append(day['date'])
+        total += day['score'] 
+        queue.append(day['score'])
+        if len(queue) == 8:
+            total -= queue.popleft()
+        gp['avg'].append(total / len(queue))
+
+    df = pd.DataFrame(gp)
+
+    fig, ax = plt.subplots()
+
+    ax.plot('date', 'score', data=df, color="gainsboro")
+    ax.plot('date', 'avg', data=df, color="black")
+    ax.set_title("Daily Scores")
+
+    fig.autofmt_xdate()
+
+    plt.savefig('score_plot.png')
+
 def graph(tag):
     db = TinyDB('db.json')
     days_table = db.table('days')
@@ -60,6 +93,7 @@ def main():
 
     group.add_argument("-u", "--update", help="Update database")
     group.add_argument("-s", "--stats", metavar="tag", help="Get stats for tag")
+    group.add_argument("-c", "--score", help="Get stats for tag")
 
     args = parser.parse_args()
 
@@ -67,12 +101,16 @@ def main():
         graph(args.stats)
         sys.exit()
 
+    if args.score != None:
+        score()
+        sys.exit()
+
     # TODO: Add way for scores / 30 minutes
     # TODO: Happiness every day
     log = None
     tags = []
-    tagTime = {}
 
+    lastScore = 0
     lastTime = 0
 
     # TODO: Different tables for days/tags/etc.
@@ -101,6 +139,7 @@ def main():
             continue
         elif "-" in words[0] and words[0][0].isdigit():
             dd['date'] = words[0].strip()
+            dd['score'] = 0
             dd['tags'] = {}
             lastTime = 0
             tags.clear()
@@ -113,6 +152,7 @@ def main():
         time_passed = time_to_minutes(words[0])
         # Process last one
         if lastTime != 0:
+            dd['score'] += (time_passed - lastTime) / 15 * lastScore
             for tag in tags:
                 temp_tags = []
                 tag_split = tag.split("(")
@@ -126,11 +166,6 @@ def main():
                     dd['tags'].setdefault(ttag, 0)
                     dd['tags'][ttag] += time_passed - lastTime
 
-                    if ttag not in tagTime:
-                        tagTime[ttag] = time_passed - lastTime
-                    else:
-                        tagTime[ttag] += time_passed - lastTime
-
         # Push Current (Not if FIN)
         tags.clear()
         if words[1] == "FIN":
@@ -139,9 +174,15 @@ def main():
             continue
 
         lastTime = time_passed
+        lastScore = 0
         for word in words:
             if word[0] == '@':
                 tags.append(word[1:])
+            elif word[0] == '-':
+                lastScore = int(word)
+            elif word[0] == '+':
+                print("found score: {} on line {}".format(word, line))
+                lastScore = int(word[1:])
 
 if __name__ == '__main__':
     main()
