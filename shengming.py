@@ -3,6 +3,7 @@ from tinydb import TinyDB, Query
 import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
+import sys
 
 # TODO: Parse function -> send each day's text to either tags, score, happiness, etc.
 
@@ -65,8 +66,6 @@ def main():
     if args.stats != None:
         graph(args.stats)
         sys.exit()
-
-
 
     # TODO: Add way for scores / 30 minutes
     # TODO: Happiness every day
