@@ -4,6 +4,7 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
+import datetime
 
 # TODO: Parse function -> send each day's text to either tags, score, happiness, etc.
 
@@ -75,36 +76,7 @@ def graph(tag):
 
     plt.savefig('plot.png')
 
-def time_to_minutes(time):
-    # TODO: Convert time to minutes
-    split_time = time.split(":")
-    return int(split_time[0]) * 60 + int(split_time[1])
-
-
-# TODO: Proper way to name things and documentation
-# TODO: Check for just the last week
-# TODO: Score for every day
-# TODO: Write states to JSON or something then also be able to output stats from that
-# TODO: Have # be comment in the file
-def main():
-    # Arguments
-    parser = argparse.ArgumentParser()
-    group = parser.add_mutually_exclusive_group()
-
-    group.add_argument("-u", "--update", help="Update database")
-    group.add_argument("-s", "--stats", metavar="tag", help="Get stats for tag")
-    group.add_argument("-c", "--score", help="Get stats for tag")
-
-    args = parser.parse_args()
-
-    if args.stats != None:
-        graph(args.stats)
-        sys.exit()
-
-    if args.score != None:
-        score()
-        sys.exit()
-
+def parse():
     # TODO: Add way for scores / 30 minutes
     # TODO: Happiness every day
     log = None
@@ -125,7 +97,6 @@ def main():
         sys.exit()
 
     lines = log.readlines()
-
     dd = {}
     for line in lines:
         if line[0] == '#':
@@ -148,7 +119,6 @@ def main():
         if not words[0][0].isdigit():
             continue
 
-        
         time_passed = time_to_minutes(words[0])
         # Process last one
         if lastTime != 0:
@@ -169,7 +139,7 @@ def main():
         # Push Current (Not if FIN)
         tags.clear()
         if words[1] == "FIN":
-            days.insert(dd) 
+            days.insert(dd)
             dd.clear()
             continue
 
@@ -182,6 +152,68 @@ def main():
                 lastScore = int(word)
             elif word[0] == '+':
                 lastScore = int(word[1:])
+
+def paper_parse():
+    # Manually create a list of tags
+    tags = ["exercise", "social", "research", "leisure", "school", "maintenance", "happiness"]
+
+    day = {}
+
+    # Store date (month/day/year) in the date key.
+    date = datetime.datetime.now()
+    day["date"] = date.strftime("%x")
+
+    # Prompt user for hours spent on each tag and store it in the tag key in minutes.
+    for tag in tags:
+        if tag == "happiness":
+            day[tag] = float(input(tag + ": "))
+        else:
+            day[tag] = float(input(tag + ": ")) * 60
+
+
+
+    db = TinyDB('db.json')
+    days = db.table('days')
+    days.insert(day)
+    print("Hours stored.")
+
+def time_to_minutes(time):
+    # TODO: Convert time to minutes
+    split_time = time.split(":")
+    return int(split_time[0]) * 60 + int(split_time[1])
+
+
+# TODO: Proper way to name things and documentation
+# TODO: Check for just the last week
+# TODO: Score for every day
+# TODO: Write states to JSON or something then also be able to output stats from that
+# TODO: Have # be comment in the file
+def main():
+    # Arguments
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
+
+    group.add_argument("-u", "--update", help="Update database")
+    group.add_argument("-s", "--stats", metavar="tag", help="Get stats for tag")
+    group.add_argument("-c", "--score", help="Get stats for tag")
+    group.add_argument("-p", "--paper", action="store_true", help="Input hours per tag instead of schedule")
+
+    args = parser.parse_args()
+
+    if args.stats != None:
+        graph(args.stats)
+        sys.exit()
+
+    if args.score != None:
+        score()
+        sys.exit()
+
+    if args.paper:
+        paper_parse()
+    else:
+        parse()
+
+
 
 if __name__ == '__main__':
     main()
