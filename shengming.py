@@ -161,7 +161,7 @@ def paper_parse():
 
     # Store date (month/day/year) in the date key.
     date = datetime.datetime.now()
-    day["date"] = date.strftime("%x")
+    day["date"] = date.strftime("%Y-%m-%d")
 
     # Prompt user for hours spent on each tag and store it in the tag key in minutes.
     for tag in tags:
@@ -169,8 +169,6 @@ def paper_parse():
             day[tag] = float(input(tag + ": "))
         else:
             day[tag] = float(input(tag + ": ")) * 60
-
-
 
     db = TinyDB('db.json')
     days = db.table('days')
