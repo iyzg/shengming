@@ -20,6 +20,6 @@ def separate_subtags(tags):
         for section in tag_split:
             if ')' in section:
                 all_tags.append(tag_split[0] + "(" + section)
-        else:
-            all_tags.append(section)
+            else:
+                all_tags.append(section)
     return all_tags

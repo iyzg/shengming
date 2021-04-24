@@ -1,4 +1,5 @@
 from tinydb import TinyDB, Query
+import calplot
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
@@ -6,18 +7,10 @@ import sys
 import arguments
 import parser
 
-# TODO: Parse function -> send each day's text to either tags, score, happiness, etc.
-
 def time_to_minutes(time):
-    # TODO: Convert time to minutes
     split_time = time.split(":")
     return int(split_time[0]) * 60 + int(split_time[1])
 
-
-# TODO: Proper way to name things and documentation
-# TODO: Check for just the last week
-# TODO: Write states to JSON or something then also be able to output stats from that
-# TODO: Have # be comment in the file
 def main():
     args = arguments.get_arguments()
 
@@ -25,6 +18,9 @@ def main():
         print("Must pass arguments")
         sys.exit()
     
+    #  print(args)
+    #  print(args[0] == "plot")
+
     db = TinyDB('db.json')
     days = db.table('days')
 
@@ -63,6 +59,32 @@ def main():
         fig.autofmt_xdate()
 
         plt.savefig('plot.png')
+
+    elif args[0] == "heatmap":
+        days_list = []
+        cnts = []
+        for day in days:
+            days_list.append(day)
+        days_list.reverse()
+
+        all_days = pd.date_range(days_list[0]['date'], days_list[-1]['date'], freq='D')
+        cmin = 10000
+        cmax = -1
+        for day in days_list:
+            tcnt = 0
+            if args[1] == "happiness" or args[1] == "score":
+                tcnt = day[args[1]]
+            elif args[1] in day['tags']:
+                tcnt = day['tags'][args[1]]
+            print("{}: {}".format(day['date'], tcnt))
+            cmin = min(cmin, tcnt)
+            cmax = max(cmax, tcnt)
+            cnts.append(tcnt)
+
+        events = pd.Series(cnts, index=all_days)
+
+        calplot.calplot(events, vmin=cmin, vmax=cmax, cmap='Blues', edgecolor=None)
+        plt.savefig('heatmap.png')
 
     # Cleans out database and recreates it using life.sm
     elif args[0] == "parse":
