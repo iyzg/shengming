@@ -18,9 +18,6 @@ def main():
         print("Must pass arguments")
         sys.exit()
     
-    #  print(args)
-    #  print(args[0] == "plot")
-
     db = TinyDB('db.json')
     days = db.table('days')
 
@@ -76,7 +73,6 @@ def main():
                 tcnt = day[args[1]]
             elif args[1] in day['tags']:
                 tcnt = day['tags'][args[1]]
-            print("{}: {}".format(day['date'], tcnt))
             cmin = min(cmin, tcnt)
             cmax = max(cmax, tcnt)
             cnts.append(tcnt)
