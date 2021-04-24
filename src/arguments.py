@@ -8,15 +8,12 @@ def get_arguments():
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
 
-    group.add_argument("-t", "--stats", help="Get stats for tags")
-    group.add_argument("-c", "--score", help="Get graph of score", action="store_true")
-    group.add_argument("-p", "--parse", help="Rebuild database from file", action="store_true")
+    group.add_argument("-l", "--plot", help="Plot tag, scores, or happiness")
+    group.add_argument("-a", "--parse", help="Rebuild database from file", action="store_true")
 
     args = parser.parse_args()
 
-    if args.stats is not None:
-        return ("stats", args.stats)
-    elif args.score:
-        return ("score", True)
+    if args.plot is not None:
+        return ("plot", args.plot)
     elif args.parse:
         return ("parse", True)

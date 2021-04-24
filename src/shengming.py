@@ -1,4 +1,3 @@
-from collections import deque
 from tinydb import TinyDB, Query
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -26,11 +25,44 @@ def main():
         print("Must pass arguments")
         sys.exit()
     
-    if args[0] == "stats":
-        print("todo stats")
+    db = TinyDB('db.json')
+    days = db.table('days')
 
-    elif args[0] == "score":
-        print("todo score")
+    if args[0] == "plot":
+        gp = {'cnt':[], 'date':[], 'avg':[]}
+        queue = []
+        total = 0
+        days_list = []
+        for day in days:
+            days_list.append(day)
+        days_list.reverse()
+
+        for day in days_list:
+            tcnt = 0
+            if args[1] == "happiness" or args[1] == "score":
+                tcnt = day[args[1]]
+            elif args[1] in day['tags']:
+                tcnt = day['tags'][args[1]]
+
+            gp['cnt'].append(tcnt)
+            gp['date'].append(day['date'])
+            total += tcnt
+            queue.append(tcnt)
+            if len(queue) == 8:
+                total -= queue.pop(0)
+            gp['avg'].append(total / len(queue))
+
+        df = pd.DataFrame(gp)
+
+        fig, ax = plt.subplots()
+
+        ax.plot('date', 'cnt', data=df, color="gainsboro")
+        ax.plot('date', 'avg', data=df, color="black")
+        ax.set_title("Plot")
+
+        fig.autofmt_xdate()
+
+        plt.savefig('plot.png')
 
     # Cleans out database and recreates it using life.sm
     elif args[0] == "parse":
@@ -41,8 +73,7 @@ def main():
         lastTime = 0
 
         # TODO: Different tables for days/tags/etc.
-        db = TinyDB('db.json')
-        days = db.table('days')
+        # Clean out past database
         days.truncate()
 
         try:
