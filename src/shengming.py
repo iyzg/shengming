@@ -49,11 +49,13 @@ def main():
 
         fig, ax = plt.subplots()
 
-        ax.plot('date', 'cnt', data=df, color="gainsboro")
+        ax.plot('date', 'cnt', data=df, color="darkgrey")
         ax.plot('date', 'avg', data=df, color="black")
         ax.set_title("Plot")
 
         fig.autofmt_xdate()
+
+        plt.grid(b=True, which='major', axis='y', color='ghostwhite', linestyle='-')
 
         plt.savefig('plot.png')
 
