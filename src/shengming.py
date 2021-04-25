@@ -1,5 +1,6 @@
 from tinydb import TinyDB, Query
 import calplot
+import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
@@ -83,6 +84,52 @@ def main():
 
         calplot.calplot(events, vmin=cmin, vmax=cmax, cmap='Blues', edgecolor=None)
         plt.savefig('heatmap.png')
+
+    # TODO: What happens if tag only in prev and not in curr, then it should be -INF
+    elif args[0] == "compare":
+        if args[1] == "week":
+            dateOffset = datetime.timedelta(days = 7)
+        elif args[1] == "month":
+            dateOffset = datetime.timedelta(days = 30)
+        elif args[1] == "year":
+            dateOffset = datetime.timedelta(days = 365)
+        else:
+            print("Invalid time range")
+            sys.exit()
+
+        todayDate = datetime.datetime.now()
+        prevDate = todayDate - dateOffset
+
+        curDict = {}
+        prevDict = {}
+
+        for day in days:
+            dayDate = datetime.datetime.strptime(day['date'], '%Y-%m-%d')
+            if dayDate <= prevDate - dateOffset: continue
+
+            if prevDate < dayDate <= dayDate:
+                for tag in day['tags']:
+                    curDict.setdefault(tag, 0)
+                    curDict[tag] += day['tags'][tag]
+            elif prevDate - dateOffset < dayDate <= prevDate:
+                for tag in day['tags']:
+                    prevDict.setdefault(tag, 0)
+                    prevDict[tag] += day['tags'][tag]
+
+        print("Curr: ")
+        for tag in curDict:
+            if tag not in prevDict:
+                change = "+INF"
+                prev = 0
+            else:
+                prev = prevDict[tag]
+                change = float(curDict[tag] - prevDict[tag]) / prevDict[tag] * 100.0
+                change = str(round(change, 2))
+                if change[0] != '-':
+                    change = '+' + change
+
+            
+            print("{}: {}% ({} → {})".format(tag, change, prev, curDict[tag]))
 
     # Cleans out database and recreates it using life.sm
     elif args[0] == "parse":
