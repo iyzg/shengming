@@ -11,6 +11,7 @@ def get_arguments():
     group.add_argument("-a", "--parse", help="Rebuild database from file", action="store_true")
     group.add_argument("-c", "--compare", help="Compare stats from last 2 {week, month, year}")
     group.add_argument("-e", "--heatmap", help="Heatmap tag, scores, or happiness")
+    group.add_argument("-i", "--pie", help="Pie chart from last {week, month, year}")
     group.add_argument("-l", "--plot", help="Plot tag, scores, or happiness")
 
     args = parser.parse_args()
@@ -21,5 +22,7 @@ def get_arguments():
         return ("heatmap", args.heatmap)
     elif args.compare is not None:
         return ("compare", args.compare)
+    elif args.pie is not None:
+        return ("pie", args.pie)
     elif args.parse:
         return ("parse", True)
