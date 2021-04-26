@@ -116,7 +116,6 @@ def main():
                     prevDict.setdefault(tag, 0)
                     prevDict[tag] += day['tags'][tag]
 
-        print("Curr: ")
         for tag in curDict:
             if tag not in prevDict:
                 change = "+INF"
