@@ -196,6 +196,17 @@ def main():
             if line[0] == '#' or len(words) == 0 or not words[0][0].isdigit():
                 continue
             elif "-" in words[0] and words[0][0].isdigit():
+                if dd:
+                    time_passed = time_to_minutes("24:00")
+                    dd['score'] += (time_passed - lastTime) / 15 * lastScore
+                    temp_tags = parser.separate_subtags(tags)
+
+                    for ttag in temp_tags:
+                        dd['tags'].setdefault(ttag, 0)
+                        dd['tags'][ttag] += time_passed - lastTime
+                    days.insert(dd)
+                    dd.clear()
+
                 dd['date'] = words[0].strip()
                 dd['score'] = 0
                 dd['tags'] = {}
@@ -203,13 +214,13 @@ def main():
                     dd['happiness'] = int(words[2])
                 else:
                     dd['happiness'] = 0
-                lastTime = 0
+                lastTime = -1
                 tags.clear()
                 continue
             
             time_passed = time_to_minutes(words[0])
             # Process last one
-            if lastTime != 0:
+            if lastTime != -1:
                 dd['score'] += (time_passed - lastTime) / 15 * lastScore
                 temp_tags = parser.separate_subtags(tags)
 
@@ -219,14 +230,13 @@ def main():
 
             # Push Current (Not if FIN)
             tags.clear()
-            if words[1] == "FIN":
-                days.insert(dd) 
-                dd.clear()
-                continue
 
             lastTime = time_passed
             tags = parser.parse_tags(line)
             lastScore = parser.parse_score(line)
+
+        if dd:
+            days.insert(dd)
     else: 
         print("Invalid command")
 
