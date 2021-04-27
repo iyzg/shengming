@@ -12,8 +12,8 @@ def time_to_minutes(time):
     split_time = time.split(":")
     return int(split_time[0]) * 60 + int(split_time[1])
 
-# TODO: Get rid of FIN for all 24d hrs. and ending on next day
-# TODO: ^ Remember if last line and you have a day not processed, add it
+# TODO: YAML file or something to set scores for tags that way you don't need to put in log
+# TODO: Maybe also use YAML tag to set shortcodes for tags so leisure(cello) becomes lc or something
 def main():
     args = arguments.get_arguments()
 
@@ -204,6 +204,7 @@ def main():
                     for ttag in temp_tags:
                         dd['tags'].setdefault(ttag, 0)
                         dd['tags'][ttag] += time_passed - lastTime
+                    dd['score'] = int(dd['score'])
                     days.insert(dd)
                     dd.clear()
 
@@ -221,7 +222,7 @@ def main():
             time_passed = time_to_minutes(words[0])
             # Process last one
             if lastTime != -1:
-                dd['score'] += (time_passed - lastTime) / 15 * lastScore
+                dd['score'] += (time_passed - lastTime) / 15.0 * lastScore
                 temp_tags = parser.separate_subtags(tags)
 
                 for ttag in temp_tags:
@@ -236,6 +237,7 @@ def main():
             lastScore = parser.parse_score(line)
 
         if dd:
+            dd['score'] = int(dd['score'])
             days.insert(dd)
     else: 
         print("Invalid command")
