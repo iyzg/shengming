@@ -246,9 +246,9 @@ def main():
             lastTime = time_passed
             tags = parser.parse_tags(line)
 
-            if len(tags) > 0:
+            try:
                 lastScore = scoreDB[tags[0].split('(')[0]]
-            else:
+            except:
                 lastScore = 0
 
         if dd:
