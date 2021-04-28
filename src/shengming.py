@@ -1,4 +1,5 @@
 from tinydb import TinyDB, Query
+from yaml import load, Loader
 import calplot
 import datetime
 import matplotlib.pyplot as plt
@@ -176,7 +177,6 @@ def main():
 
     # Cleans out database and recreates it using life.sm
     elif args[0] == "parse":
-        log = None
         tags = []
 
         lastScore = 0
@@ -188,9 +188,15 @@ def main():
 
         try:
             log = open("life.sm", "r")
+            conf = open("conf.yaml", "r")
         except IOError: 
-            print("No daily file found")
+            print("Either life.sm or conf.yaml not found")
             sys.exit()
+
+        conf_db = load(conf, Loader=Loader)
+        scoreDB = {}
+        for tagScore in conf_db:
+            scoreDB.update(tagScore)
 
         lines = log.readlines()
 
@@ -239,8 +245,11 @@ def main():
 
             lastTime = time_passed
             tags = parser.parse_tags(line)
-            #  lastScore = parser.parse_score(line)
-            lastScore = 0
+
+            if len(tags) > 0:
+                lastScore = scoreDB[tags[0].split('(')[0]]
+            else:
+                lastScore = 0
 
         if dd:
             dd['score'] = int(dd['score'])
