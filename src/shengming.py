@@ -119,7 +119,12 @@ def main():
                     prevdict.setdefault(tag, 0)
                     prevdict[tag] += day['tags'][tag]
 
+        tags = []
         for tag in curdict:
+            tags.append(tag)
+
+        tags.sort()
+        for tag in tags:
             if tag not in prevdict:
                 change = "+inf"
                 prev = 0
@@ -234,7 +239,8 @@ def main():
 
             lastTime = time_passed
             tags = parser.parse_tags(line)
-            lastScore = parser.parse_score(line)
+            #  lastScore = parser.parse_score(line)
+            lastScore = 0
 
         if dd:
             dd['score'] = int(dd['score'])
