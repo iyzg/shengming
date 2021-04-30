@@ -54,40 +54,53 @@ def main():
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
 
+        plt.legend(labels=['Daily Time', 'Average Time'], fontsize=8)
+        plt.ylabel('Time [h]', fontsize=10)
+        plt.xlabel('Date', fontsize=10)
+
+
         plt.savefig('plot.png')
 
-    elif args[0] == "heatmap":
+    elif args[0] == "waves":
+        gp = {'date':[]}
         days_list = []
-        cnts = []
+        master_list = []
+
         for day in days:
+            for tag in day['tags']:
+                if '(' not in tag and tag not in master_list:
+                    master_list.append(tag)
+                    gp[tag] = []
             days_list.append(day)
         days_list.reverse()
-
-        all_days = pd.date_range(days_list[0]['date'], days_list[-1]['date'], freq='D')
-        cmin = 10000
-        cmax = -1
-
-        spec_args = args[1].split()
-        area = spec_args[0]
-        if len(spec_args) == 2:
-            color = spec_args[1]
-        else:
-            color = "Blues"
+        master_list.sort()
 
         for day in days_list:
-            tcnt = 0
-            if area == "happiness" or area == "score":
-                tcnt = day[area]
-            elif area in day['tags']:
-                tcnt = day['tags'][area]
-            cmin = min(cmin, tcnt)
-            cmax = max(cmax, tcnt)
-            cnts.append(tcnt)
+            tag_cnt = {}
+            gp['date'].append(day['date'])
 
-        events = pd.Series(cnts, index=all_days)
+            for tag in master_list:
+                tag_cnt[tag] = 0
 
-        calplot.calplot(events, vmin=cmin, vmax=cmax, cmap=color, edgecolor=None)
-        plt.savefig('heatmap.png')
+            for tag in day['tags']:
+                if '(' not in tag:
+                    tag_cnt[tag] = day['tags'][tag]
+
+            for tag in master_list:
+                gp[tag].append(tag_cnt[tag])
+        
+        df = pd.DataFrame(gp)
+        df.set_index('date', inplace=True)
+
+        fig, ax = plt.subplots()
+        #  colors = ['darkgrey', 'black']
+        df.plot.bar(figsize=(12, 6), stacked=True, ax=ax)
+
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_bounds(0, 24)
+
+        plt.savefig('bar.png')
 
     # TODO: What happens if tag only in prev and not in curr, then it should be -INF
     elif args[0] == "compare":
@@ -180,7 +193,7 @@ def main():
         tags = []
 
         lastScore = 0
-        lastTime = 0
+        lastTime = -1
 
         # TODO: Different tables for days/tags/etc.
         # Clean out past database
@@ -214,7 +227,7 @@ def main():
 
                     for ttag in temp_tags:
                         dd['tags'].setdefault(ttag, 0)
-                        dd['tags'][ttag] += time_passed - lastTime
+                        dd['tags'][ttag] += (time_passed - lastTime) / 60
                     dd['score'] = int(dd['score'])
                     days.insert(dd)
                     dd.clear()
@@ -238,8 +251,8 @@ def main():
 
                 for ttag in temp_tags:
                     dd['tags'].setdefault(ttag, 0)
-                    dd['tags'][ttag] += time_passed - lastTime
-
+                    dd['tags'][ttag] += (time_passed - lastTime) / 60
+            
             # Push Current (Not if FIN)
             tags.clear()
 
@@ -252,6 +265,13 @@ def main():
                 lastScore = 0
 
         if dd:
+            time_passed = time_to_minutes("24:00")
+            dd['score'] += (time_passed - lastTime) / 15 * lastScore
+            temp_tags = parser.separate_subtags(tags)
+
+            for ttag in temp_tags:
+                dd['tags'].setdefault(ttag, 0)
+                dd['tags'][ttag] += (time_passed - lastTime) / 60
             dd['score'] = int(dd['score'])
             days.insert(dd)
     else: 

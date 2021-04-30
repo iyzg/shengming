@@ -10,7 +10,7 @@ def get_arguments():
 
     group.add_argument("-a", "--parse", help="Rebuild database from file", action="store_true")
     group.add_argument("-c", "--compare", help="Compare stats from last 2 {week, month, year}")
-    group.add_argument("-e", "--heatmap", help="Heatmap tag, scores, or happiness")
+    group.add_argument("-w", "--waves", help="Wave", action="store_true")
     group.add_argument("-i", "--pie", help="Pie chart from last {week, month, year}")
     group.add_argument("-l", "--plot", help="Plot tag, scores, or happiness")
 
@@ -18,8 +18,8 @@ def get_arguments():
 
     if args.plot is not None:
         return ("plot", args.plot)
-    elif args.heatmap is not None:
-        return ("heatmap", args.heatmap)
+    elif args.waves:
+        return ("waves", True)
     elif args.compare is not None:
         return ("compare", args.compare)
     elif args.pie is not None:
