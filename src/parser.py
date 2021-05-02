@@ -15,33 +15,33 @@ cur = con.cursor()
 count = 0
 
 for row in source:
-	count += 1
+    count += 1
 
-	if count == 1:
-		continue
+    if count == 1:
+            continue
 
-	# deconstruct log and clean up
-	string = row.split(",", 5)
+    # deconstruct log and clean up
+    string = row.split(",", 5)
 
-	date = string[0]
-	time = string[1]
-	project = string[2].replace("'", "\\'").replace('"', '\\"').strip()
-	task = string[3].replace("'", "\\'").replace('"', '\\"').strip()
-	division = string[4].replace("'", "\\'").replace('"', '\\"').strip()
-	details = string[5].replace("'", "\\'").replace('"', '').replace('\n', ' ').replace('\r', '').strip()
+    date = string[0]
+    time = string[1]
+    project = string[2].replace("'", "\\'").replace('"', '\\"').strip()
+    task = string[3].replace("'", "\\'").replace('"', '\\"').strip()
+    division = string[4].replace("'", "\\'").replace('"', '\\"').strip()
+    details = string[5].replace("'", "\\'").replace('"', '').replace('\n', ' ').replace('\r', '').strip()
 
-	# if project / task / division is not yet noted, add to respective table array
-	if not project in projects:
-		projects.append(project)
+    # if project / task / division is not yet noted, add to respective table array
+    if not project in projects:
+        projects.append(project)
 
-	if not task in tasks:
-		tasks.append(task)
+    if not task in tasks:
+        tasks.append(task)
 
-	if not division in divisions:
-		divisions.append(division)
+    if not division in divisions:
+        divisions.append(division)
 
-	# add log
-	logs.append([date, time, project, task, division, details])
+    # add log
+    logs.append([date, time, project, task, division, details])
 
 cur.execute("DROP TABLE IF EXISTS log;")
 cur.execute("DROP TABLE IF EXISTS project;")
