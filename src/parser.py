@@ -73,19 +73,6 @@ CREATE TABLE IF NOT EXISTS task (
     name TEXT
 );''')
 
-#  output.write("delete from log;\n")
-#  output.write("delete from project;\n")
-#  output.write("delete from task;\n")
-#  output.write("delete from division;\n")
-
-#  output.write("alter table log AUTO_INCREMENT = 1;\n")
-#  output.write("alter table project AUTO_INCREMENT = 1;\n")
-#  output.write("alter table task AUTO_INCREMENT = 1;\n")
-#  output.write("alter table division AUTO_INCREMENT = 1;\n")
-
-#  output.write("SET CHARACTER SET 'utf8';\n")
-#  output.write("SET NAMES 'utf8';\n")
-
 for division in divisions:
     cur.execute("INSERT INTO division VALUES (?)", (division,))
 
