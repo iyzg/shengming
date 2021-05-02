@@ -9,7 +9,7 @@ repository() {
 	echo "updating repo"
 	git add --all
 	git commit -m "update"
-	git push -u origin master
+	git push
 }
 
 database() {
