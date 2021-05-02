@@ -12,16 +12,10 @@ repository() {
 	git push
 }
 
-database() {
-	echo "connecting to database"
-	mysql -h $SQLhost -u $SQLuser --password=$SQLpass
-}
-
 helper() {
 	echo "commands:"
 	echo "parse       parses log"
 	echo "repo        updates repository"
-	echo "database    logs into database (use 'source parse.sql' afterwards)"
 }
 
 while true
@@ -31,7 +25,6 @@ do
 
 	if [ $text = "parse" ]; then parse
 	elif [ $text = "repo" ]; then repository
-	elif [ $text = "database" ]; then database
 	elif [ $text = "help" ]; then helper
 	elif [ $text = "exit" ]; then exit
 	fi
