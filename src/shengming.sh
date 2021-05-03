@@ -20,7 +20,7 @@ helper() {
 
 while true
 do
-	echo -n "shgmg>"
+	echo -n "shengming>"
 	read text
 
 	if [ $text = "parse" ]; then parse
