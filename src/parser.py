@@ -7,8 +7,8 @@ projects = []
 divisions = []
 logs = []
 
-source = open("prd.csv", "r")
-con = sqlite3.connect('prd.db')
+source = open("lei.csv", "r")
+con = sqlite3.connect('lei.db')
 cur = con.cursor()
 
 # for each line in source
