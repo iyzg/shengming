@@ -86,11 +86,11 @@ for log in logs:
     cur.execute('''
     INSERT INTO log (date, time, project_id, task_id, division_id, details)
     VALUES(?,
-    ?,
-    (SELECT rowid FROM project WHERE name = ?),
-    (SELECT rowid FROM task WHERE name = ?),
-    (SELECT rowid FROM division WHERE name = ?),
-    ?)''', (log[0], log[1], log[2], log[3], log[4], log[5]))
+           ?,
+           (SELECT rowid FROM project WHERE name = ?),
+           (SELECT rowid FROM task WHERE name = ?),
+           (SELECT rowid FROM division WHERE name = ?),
+           ?)''', (log[0], log[1], log[2], log[3], log[4], log[5]))
 
 con.commit()
 con.close()
